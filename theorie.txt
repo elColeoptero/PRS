@@ -1,0 +1,27 @@
+Reine = 64 position possible 
+Roi = 64 position possible
+Fou = 64 position possible
+Cavalier = 64 position possible
+Tour = 64 position possible
+Pion = 56 position possible
+
+// 6 * 2 * 8 octet = 96 octets
+unsigned long  Tab_pion_blanc =0b0000000000000000000000000000000000000000000000001111111100000000
+
+// 64 * 4 = 256 octets
+// 64 * 2 = 128 octets 
+int echequier[8][8];
+
+
+// position de la tour
+unsigned long  Tab =0b0000000000000000000000000000000000000000000000000000000000000001 = 1
+// coup possible quand tu es une tour
+Tour[Tab] = tab_coup_possible= 0b0000000100000001000000010000000100000001000000010000000111111110;
+// Coup demander par le joueur 
+unsigned long  Tab_demande =0b1000000000000000000000000000000000000000000000000000000000000000 = 1
+
+if(tab_coup_possible & tab_demande ==0)
+	coup pas possible;
+
+else 
+	coup possible;
