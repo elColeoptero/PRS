@@ -141,3 +141,24 @@ for(int i=7; i>-1;i--){
 	-> on ne peut pas afficher au fur et à mesure car on affiche dans un order particulier (56 -> 63 puis 48 -> 55)
 	-> permet de récupérer la chaine à print sans switch case (plus économe)
 	-> l'algo est plus simple 
+
+
+
+void bb_to_str(uint64_t b1)
+{
+  for (int r = 7; r >= 0; --r) {
+    printf("   +---+---+---+---+---+---+---+---+\n");
+    printf(" %d |",r + 1);
+    for (int f = 0; f <= 7; ++f) {
+      if ((b1 & (1ULL << ((r << 3) | f))))
+        printf(" X |" );
+      else 
+        printf("   |");
+    }
+    
+    printf("\n");
+  }
+  printf("   +---+---+---+---+---+---+---+---+\n");
+  printf("     a   b   c   d   e   f   g   h  \n");
+
+}
