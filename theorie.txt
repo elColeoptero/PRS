@@ -99,3 +99,45 @@ Exemple :
  1 | 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  |
    +----+----+----+----+----+----+----+----+
      a    b    c    d    e    f    g    h  
+
+
+// Affichage 
+
+// Avoir un tableau de ref pour les car 
+caractere[13] = [carac pion blanc, carac cavalier blanc ...]
+caractere[13] = ["\u265F ","u265E " etc ...]
+
+// récupérer un tableau d'entier représentant l'échequier sous forme de tableau 
+board_array = [1,12,0, etc...]
+avec : (cf plus haut)
+0  = pion blanc 
+1  = cavalier blanc 
+2  = fou blanc
+3  = tour blance
+4  = dame blanche
+5  = roi blanc
+6  = pion noir 
+7  = cavalier noir 
+8  = fou noir
+9  = tour noire
+10 = dame noire
+11 = roi noir
+12 = vide
+
+// itérer sur le tableau qui répresente l'échequier mais allant de 56 -> 63 puis 48 -> 55 etc...
+
+for(int i=7; i>-1;i--){
+	for(int j=0; j<8; j++){
+
+		int indice = i*8+j
+		int numero_piece = board_array[indice]
+		String caractere_piece = caractere[numero_piece]
+		printf("%s", caractere_piece)
+
+	}
+}
+
+// pourquoi faire ça ? 
+	-> on ne peut pas afficher au fur et à mesure car on affiche dans un order particulier (56 -> 63 puis 48 -> 55)
+	-> permet de récupérer la chaine à print sans switch case (plus économe)
+	-> l'algo est plus simple 
