@@ -25,3 +25,65 @@ if(tab_coup_possible & tab_demande ==0)
 
 else 
 	coup possible;
+
+12 uint64_t
+0 -> blanc
+1 -> noir
+
+0 -> pion
+1 -> cavalier
+2 -> fou 
+3 -> tour
+4 -> dame 
+5 -> roi
+uint64_t boards[2][6]
+
+board[0][3]
+
+00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+pos = 10000000
+
+pos = 01000000
+	// test 0 --> case occupé
+		board = boards[0][0] & boards[0][1] & [..] & boards[1][5]
+		if (board & pos == 0)
+			piece = 12
+		else {
+			// test 1 --> couleur ? 
+			blanc = boards[0][0] & boards[0][1] & [..] & boards[0][5]
+			if (blanc & pos !=0)
+				couleur = 0;
+			else 
+				couleur = 1;
+			// test 2 --> pion,cavalier,fou ?
+			moitie = boards[couleur][0] & boards[couleur][1] & boards[couleur][2]
+			if (moitie & pos != 0)
+				half = 0
+			else 
+				half = 1 
+			// test 3 --> (0-3) , (1-4) , (2-5)
+			if (boards[couleur][0+half*3] & pos != 0)
+				piece = couleur*6 + half*3 + 0
+	        else if (boards[couleur][1+half*3] & pos != 0)
+		 		piece = couleur*6 + half*3 + 1
+			else
+				piece = couleur*6 + half*3 + 2
+		}
+		afficherChar(piece);
+
+for (i=0; i<64;i++){
+	pos = pow(2,i)
+}
+pos = 1
+for (i =0; i<64 ; i++){
+	pos = pos <<1;
+}
+Exemple : 
+
+10000000
+01010000
+00100000
+00001100
+00000000
+00000001
+00000010
