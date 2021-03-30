@@ -162,3 +162,105 @@ void bb_to_str(uint64_t b1)
   printf("     a   b   c   d   e   f   g   h  \n");
 
 }
+
+
+// structure 
+struct BoardDescription
+{
+    uint64_t boards[2][6];
+    int half_moves;
+    uint8_t enPassant;
+    uint8_t rook;
+};
+
+// Procedure  validation du coup 
+
+1 -> verifer que les coordonnés sont entre a1 et h8
+2 -> destination & color_bitboard != 0
+	-> oui ?
+		On veux déplacer sur une case amie
+		STOP
+3 -> trouver quelle piece c'est 
+	-> il y a une piece dans le bitboard de couleur ? 
+		-> non ? 
+			renvoie de -1
+			STOP
+	-> oui ?
+		-> trouver la piece 
+			renvoie de 0  = pion  
+			renvoie de 1  = cavalier 
+			renvoie de 2  = fou 
+			renvoie de 3  = tour 
+			renvoie de 4  = dame 
+			renvoie de 5  = roi 
+	-> non ? 
+		 renvoie de -1
+		 STOP
+4 -> verifier la validité du coup
+	-> voir 2e procedure 
+5 -> MAJ du bitboard corespondant
+6 -> pion ou prise ?
+	-> oui ?
+		half_moves =0
+7 -> pion avance de 2 ?
+	-> oui ? 
+		maj de en Passant
+	-> non ?
+		enPassant = valeur impossible 
+8 -> roi ou tour ? 
+	-> oui ? 
+		maj du rock
+9 -> maj du playeurToMove
+
+Tour,cavalier,fou,dame :
+
+1 -> récupérer le bitboard de déplacement 
+	-> coup & deplacement !=0 ?
+		-> oui ? 
+			le coup est possible 
+		-> non ?
+			le coup n'est pas possible 
+			STOP
+2 -> le roi se trouve t-il en echec après le déplacement ? 
+	-> oui ?
+		coup interdit 
+		STOP
+
+Pion :
+1 -> coup = enPassant 
+	-> oui ? 
+		Coup valable 
+2 -> récupérer le bitboard de déplacement 
+	-> coup & deplacement !=0 ?
+		-> oui ? 
+			le coup est possible 
+		-> non ?
+			le coup n'est pas possible 
+			STOP
+3 -> le roi se trouve t-il en echec après le déplacement ? 
+	-> oui ?
+		coup interdit 
+		STOP
+4 -> le pion se trouve t-il sur la bande ? 
+	-> oui ? 
+		promotion
+
+Roi : 
+
+1 -> coup correspond au rock ? 
+	-> oui ? 
+		->rock dispo ? 
+			->oui ?
+				-> move legal
+
+2 -> récupérer le bitboard de déplacement 
+	-> coup & deplacement !=0 ?
+		-> oui ? 
+			le coup est possible 
+		-> non ?
+			le coup n'est pas possible 
+			STOP
+3 -> le roi se trouve t-il en echec après le déplacement ? 
+	-> oui ?
+		coup interdit 
+		STOP
