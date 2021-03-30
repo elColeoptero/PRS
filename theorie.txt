@@ -212,55 +212,57 @@ struct BoardDescription
 		maj du rock
 9 -> maj du playeurToMove
 
-Tour,cavalier,fou,dame :
+VALIDITE COUP 
 
-1 -> récupérer le bitboard de déplacement 
-	-> coup & deplacement !=0 ?
-		-> oui ? 
-			le coup est possible 
-		-> non ?
-			le coup n'est pas possible 
+-> Tour,cavalier,fou,dame :
+
+	1 -> récupérer le bitboard de déplacement 
+		-> coup & deplacement !=0 ?
+			-> oui ? 
+				le coup est possible 
+			-> non ?
+				le coup n'est pas possible 
+				STOP
+	2 -> le roi se trouve t-il en echec après le déplacement ? 
+		-> oui ?
+			coup interdit 
 			STOP
-2 -> le roi se trouve t-il en echec après le déplacement ? 
-	-> oui ?
-		coup interdit 
-		STOP
 
-Pion :
-1 -> coup = enPassant 
-	-> oui ? 
-		Coup valable 
-2 -> récupérer le bitboard de déplacement 
-	-> coup & deplacement !=0 ?
+-> Pion :
+	1 -> coup = enPassant 
 		-> oui ? 
-			le coup est possible 
-		-> non ?
-			le coup n'est pas possible 
+			Coup valable 
+	2 -> récupérer le bitboard de déplacement 
+		-> coup & deplacement !=0 ?
+			-> oui ? 
+				le coup est possible 
+			-> non ?
+				le coup n'est pas possible 
+				STOP
+	3 -> le roi se trouve t-il en echec après le déplacement ? 
+		-> oui ?
+			coup interdit 
 			STOP
-3 -> le roi se trouve t-il en echec après le déplacement ? 
-	-> oui ?
-		coup interdit 
-		STOP
-4 -> le pion se trouve t-il sur la bande ? 
-	-> oui ? 
-		promotion
-
-Roi : 
-
-1 -> coup correspond au rock ? 
-	-> oui ? 
-		->rock dispo ? 
-			->oui ?
-				-> move legal
-
-2 -> récupérer le bitboard de déplacement 
-	-> coup & deplacement !=0 ?
+	4 -> le pion se trouve t-il sur la bande ? 
 		-> oui ? 
-			le coup est possible 
-		-> non ?
-			le coup n'est pas possible 
+			promotion
+
+-> Roi : 
+
+	1 -> coup correspond au rock ? 
+		-> oui ? 
+			->rock dispo ? 
+				->oui ?
+					-> move legal
+
+	2 -> récupérer le bitboard de déplacement 
+		-> coup & deplacement !=0 ?
+			-> oui ? 
+				le coup est possible 
+			-> non ?
+				le coup n'est pas possible 
+				STOP
+	3 -> le roi se trouve t-il en echec après le déplacement ? 
+		-> oui ?
+			coup interdit 
 			STOP
-3 -> le roi se trouve t-il en echec après le déplacement ? 
-	-> oui ?
-		coup interdit 
-		STOP
