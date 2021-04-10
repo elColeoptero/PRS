@@ -1,0 +1,268 @@
+Reine = 64 position possible 
+Roi = 64 position possible
+Fou = 64 position possible
+Cavalier = 64 position possible
+Tour = 64 position possible
+Pion = 56 position possible
+
+// 6 * 2 * 8 octet = 96 octets
+unsigned long  Tab_pion_blanc =0b0000000000000000000000000000000000000000000000001111111100000000
+
+// 64 * 4 = 256 octets
+// 64 * 2 = 128 octets 
+int echequier[8][8];
+
+
+// position de la tour
+unsigned long  Tab =0b0000000000000000000000000000000000000000000000000000000000000001 = 1
+// coup possible quand tu es une tour
+Tour[Tab] = tab_coup_possible= 0b0000000100000001000000010000000100000001000000010000000111111110;
+// Coup demander par le joueur 
+unsigned long  Tab_demande =0b1000000000000000000000000000000000000000000000000000000000000000 = 1
+
+if(tab_coup_possible & tab_demande ==0)
+	coup pas possible;
+
+else 
+	coup possible;
+
+12 uint64_t
+0 -> blanc
+1 -> noir
+
+0 -> pion
+1 -> cavalier
+2 -> fou 
+3 -> tour
+4 -> dame 
+5 -> roi
+uint64_t boards[2][6]
+
+board[0][3]
+
+00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+pos = 10000000
+
+pos = 01000000
+	// test 0 --> case occupé
+		board = boards[0][0] & boards[0][1] & [..] & boards[1][5]
+		if (board & pos == 0)
+			piece = 12
+		else {
+			// test 1 --> couleur ? 
+			blanc = boards[0][0] & boards[0][1] & [..] & boards[0][5]
+			if (blanc & pos !=0)
+				couleur = 0;
+			else 
+				couleur = 1;
+			// test 2 --> pion,cavalier,fou ?
+			moitie = boards[couleur][0] & boards[couleur][1] & boards[couleur][2]
+			if (moitie & pos != 0)
+				half = 0
+			else 
+				half = 1 
+			// test 3 --> (0-3) , (1-4) , (2-5)
+			if (boards[couleur][0+half*3] & pos != 0)
+				piece = couleur*6 + half*3 + 0
+	        else if (boards[couleur][1+half*3] & pos != 0)
+		 		piece = couleur*6 + half*3 + 1
+			else
+				piece = couleur*6 + half*3 + 2
+		}
+		afficherChar(piece);
+
+for (i=0; i<64;i++){
+	pos = pow(2,i)
+}
+pos = 1
+for (i =0; i<64 ; i++){
+	[Traitement]
+	pos = pos <<1;
+}
+Exemple : 
+
+   +----+----+----+----+----+----+----+----+
+ 8 | 56 | 57 | 58 | 59 | 60 | 61 | 62 | 63 |
+   +----+----+----+----+----+----+----+----+
+ 7 | 48 | 49 | 50 | 51 | 52 | 53 | 54 | 55 |
+   +----+----+----+----+----+----+----+----+
+ 6 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 |
+   +----+----+----+----+----+----+----+----+
+ 5 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 |
+   +----+----+----+----+----+----+----+----+
+ 4 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 |
+   +----+----+----+----+----+----+----+----+
+ 3 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 |
+   +----+----+----+----+----+----+----+----+
+ 2 | 8  | 9  | 10 | 11 | 12 | 13 | 14 | 15 |
+   +----+----+----+----+----+----+----+----+
+ 1 | 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  |
+   +----+----+----+----+----+----+----+----+
+     a    b    c    d    e    f    g    h  
+
+
+// Affichage 
+
+// Avoir un tableau de ref pour les car 
+caractere[13] = [carac pion blanc, carac cavalier blanc ...]
+caractere[13] = ["\u265F ","u265E " etc ...]
+
+// récupérer un tableau d'entier représentant l'échequier sous forme de tableau 
+board_array = [1,12,0, etc...]
+avec : (cf plus haut)
+0  = pion blanc 
+1  = cavalier blanc 
+2  = fou blanc
+3  = tour blance
+4  = dame blanche
+5  = roi blanc
+6  = pion noir 
+7  = cavalier noir 
+8  = fou noir
+9  = tour noire
+10 = dame noire
+11 = roi noir
+12 = vide
+
+// itérer sur le tableau qui répresente l'échequier mais allant de 56 -> 63 puis 48 -> 55 etc...
+
+for(int i=7; i>-1;i--){
+	for(int j=0; j<8; j++){
+
+		int indice = i*8+j
+		int numero_piece = board_array[indice]
+		String caractere_piece = caractere[numero_piece]
+		printf("%s", caractere_piece)
+
+	}
+}
+
+// pourquoi faire ça ? 
+	-> on ne peut pas afficher au fur et à mesure car on affiche dans un order particulier (56 -> 63 puis 48 -> 55)
+	-> permet de récupérer la chaine à print sans switch case (plus économe)
+	-> l'algo est plus simple 
+
+
+
+void bb_to_str(uint64_t b1)
+{
+  for (int r = 7; r >= 0; --r) {
+    printf("   +---+---+---+---+---+---+---+---+\n");
+    printf(" %d |",r + 1);
+    for (int f = 0; f <= 7; ++f) {
+      if ((b1 & (1ULL << ((r << 3) | f))))
+        printf(" X |" );
+      else 
+        printf("   |");
+    }
+    
+    printf("\n");
+  }
+  printf("   +---+---+---+---+---+---+---+---+\n");
+  printf("     a   b   c   d   e   f   g   h  \n");
+
+}
+
+
+// structure 
+struct BoardDescription
+{
+    uint64_t boards[2][6];
+    int half_moves;
+    uint8_t enPassant;
+    uint8_t rook;
+};
+
+// Procedure  validation du coup 
+
+1 -> verifer que les coordonnés sont entre a1 et h8
+2 -> destination & color_bitboard != 0
+	-> oui ?
+		On veux déplacer sur une case amie
+		STOP
+3 -> trouver quelle piece c'est 
+	-> il y a une piece dans le bitboard de couleur ? 
+		-> non ? 
+			renvoie de -1
+			STOP
+	-> oui ?
+		-> trouver la piece 
+			renvoie de 0  = pion  
+			renvoie de 1  = cavalier 
+			renvoie de 2  = fou 
+			renvoie de 3  = tour 
+			renvoie de 4  = dame 
+			renvoie de 5  = roi 
+	-> non ? 
+		 renvoie de -1
+		 STOP
+4 -> verifier la validité du coup
+	-> voir 2e procedure 
+5 -> MAJ du bitboard corespondant
+6 -> pion ou prise ?
+	-> oui ?
+		half_moves =0
+7 -> pion avance de 2 ?
+	-> oui ? 
+		maj de en Passant
+	-> non ?
+		enPassant = valeur impossible 
+8 -> roi ou tour ? 
+	-> oui ? 
+		maj du rock
+9 -> maj du playeurToMove
+
+VALIDITE COUP 
+
+-> Tour,cavalier,fou,dame :
+
+	1 -> récupérer le bitboard de déplacement 
+		-> coup & deplacement !=0 ?
+			-> oui ? 
+				le coup est possible 
+			-> non ?
+				le coup n'est pas possible 
+				STOP
+	2 -> le roi se trouve t-il en echec après le déplacement ? 
+		-> oui ?
+			coup interdit 
+			STOP
+
+-> Pion :
+	1 -> coup = enPassant 
+		-> oui ? 
+			Coup valable 
+	2 -> récupérer le bitboard de déplacement 
+		-> coup & deplacement !=0 ?
+			-> oui ? 
+				le coup est possible 
+			-> non ?
+				le coup n'est pas possible 
+				STOP
+	3 -> le roi se trouve t-il en echec après le déplacement ? 
+		-> oui ?
+			coup interdit 
+			STOP
+	4 -> le pion se trouve t-il sur la bande ? 
+		-> oui ? 
+			promotion
+
+-> Roi : 
+
+	1 -> coup correspond au rock ? 
+		-> oui ? 
+			->rock dispo ? 
+				->oui ?
+					-> move legal
+
+	2 -> récupérer le bitboard de déplacement 
+		-> coup & deplacement !=0 ?
+			-> oui ? 
+				le coup est possible 
+			-> non ?
+				le coup n'est pas possible 
+				STOP
+	3 -> le roi se trouve t-il en echec après le déplacement ? 
+		-> oui ?
+			coup interdit 
+			STOP
