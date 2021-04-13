@@ -157,7 +157,9 @@ void signalHandler(int signalNum)
             lire(DestMove, 5);
             jouerCoup = true;
             //saisiUser();
-        } while (!jouerCoup);
+            // if (jouerCoup == 2)
+            //  promotion(theGame, DestMove, color, 4);
+        } while (jouerCoup == 0);
         sem_post(gameAccess);
         system("clear");
         sem_wait(gameAccess);
