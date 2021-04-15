@@ -3,7 +3,7 @@
 //
 
 #include "chess_game.h"
-#include "chess_bitboard.h"
+#include "../chess_bitboard/chess_bitboard.h"
 
 
 // TODO : put pointer to boardDescription

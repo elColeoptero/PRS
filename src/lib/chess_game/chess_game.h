@@ -5,8 +5,8 @@
 #ifndef CHES_CHESS_GAME_H
 #define CHES_CHESS_GAME_H
 
-#include "chess_display.h"
-#include "chess_action.h"
+#include "../chess_display/chess_display.h"
+#include "../chess_action/chess_action.h"
 #include <math.h>
 
 void initBoard(BoardDescription *boardDescription );

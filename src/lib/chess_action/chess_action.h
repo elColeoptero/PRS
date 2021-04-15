@@ -4,7 +4,7 @@
 
 #ifndef CHES_CHESS_ACTION_H
 #define CHES_CHESS_ACTION_H
-#include "chess_bitboard.h"
+#include "../chess_bitboard/chess_bitboard.h"
 #include <math.h>
 typedef struct  BoardDescription BoardDescription;
 struct BoardDescription

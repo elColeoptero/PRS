@@ -11,8 +11,8 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "lire.h"
-#include "chess_game.h"
+#include "lib/read_lib/read_lib.h"
+#include "lib/chess_game/chess_game.h"
 #include <stdlib.h>
 // TEMP
 

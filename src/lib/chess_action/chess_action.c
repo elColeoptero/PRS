@@ -2,8 +2,8 @@
 // Created by elcoleoptero on 12/04/2021.
 //
 
-#include "chess_action.h"
-#include "chess_display.h"
+#include "../chess_action/chess_action.h"
+#include "../chess_display/chess_display.h"
 
 uint64_t validerCoup(BoardDescription *boardDescription, char *position) {
 

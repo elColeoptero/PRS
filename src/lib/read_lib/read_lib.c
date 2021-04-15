@@ -1,4 +1,4 @@
-#include "lire.h"
+#include "read_lib.h"
 void viderBuffer()
 {
     int c = 0;
