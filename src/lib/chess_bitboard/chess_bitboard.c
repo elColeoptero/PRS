@@ -2,7 +2,7 @@
 // Created by elcoleoptero on 30/03/2021.
 //
 
-#include "bitboard.h"
+#include "chess_bitboard.h"
 const uint64_t FileAMask = 0x0101010101010101ULL;
 const uint64_t FileHMask = 0x8080808080808080ULL;
 const unsigned RShift[64] = {
@@ -130,7 +130,7 @@ void init_piece(bool rook, int sq)
         Attacks[sq + 1] = Attacks[sq] + TableSize;
 }
 
-void init()
+void init_bitboard()
 {
     int sq;
 

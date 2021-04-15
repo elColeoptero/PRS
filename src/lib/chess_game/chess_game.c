@@ -3,199 +3,203 @@
 //
 
 #include "chess_game.h"
+#include "chess_bitboard.h"
 
 
-BoardDescription boardDescription;
+// TODO : put pointer to boardDescription
+void initBoard(BoardDescription *boardDescription ) {
 
-void initBoard() {
+    boardDescription->boards[0][0] = 0b0000000000000000000000000000000000000000000000001111111100000000;
+    boardDescription->boards[0][1] = 0b0000000000000000000000000000000000000000000000000000000001000010;
+    boardDescription->boards[0][2] = 0b0000000000000000000000000000000000000000000000000000000000100100;
+    boardDescription->boards[0][3] = 0b0000000000000000000000000000000000000000000000000000000010000001;
+    boardDescription->boards[0][4] = 0b0000000000000000000000000000000000000000000000000000000000001000;
+    boardDescription->boards[0][5] = 0b0000000000000000000000000000000000000000000000000000000000010000;
+    boardDescription->boards[1][0] = 0b0000000011111111000000000000000000000000000000000000000000000000;
+    boardDescription->boards[1][1] = 0b0100001000000000000000000000000000000000000000000000000000000000;
+    boardDescription->boards[1][2] = 0b0010010000000000000000000000000000000000000000000000000000000000;
+    boardDescription->boards[1][3] = 0b1000000100000000000000000000000000000000000000000000000000000000;
+    boardDescription->boards[1][4] = 0b0000100000000000000000000000000000000000000000000000000000000000;
+    boardDescription->boards[1][5] = 0b0001000000000000000000000000000000000000000000000000000000000000;
+    boardDescription->enPassant = 64; // no enPassant allowed
+    boardDescription->half_moves = 0;
+    boardDescription->castling = 0b00001111; // 4 rocks are possible
 
-    boardDescription.boards[0][0] = 0b0000000000000000000000000000000000000000000000001111111000000000;
-    boardDescription.boards[0][1] = 0b0000000000000000000000000000000000000000000000000000000001000010;
-    boardDescription.boards[0][2] = 0b0000000000000000000000000000000000000000000000000000000000100100;
-    boardDescription.boards[0][3] = 0b0000000000000000000000000000000000000000000000000000000010000001;
-    boardDescription.boards[0][4] = 0b0000000000000000000000000000000000000000000000000000000000001000;
-    boardDescription.boards[0][5] = 0b0000000000000000000000000000000000000000000000000000000000010000;
-    boardDescription.boards[1][0] = 0b0000000011111111000000000000000000000000000000000000000000000000;
-    boardDescription.boards[1][1] = 0b0100001000000000000000000000000000000000000000000000000000000000;
-    boardDescription.boards[1][2] = 0b0010010000000000000000000000000000000000000000000000000000000000;
-    boardDescription.boards[1][3] = 0b1000000100000000000000000000000000000000000000000000000000000000;
-    boardDescription.boards[1][4] = 0b0001000000000000000000000000000000000000000000000000000000000000;
-    boardDescription.boards[1][5] = 0b0000100000000000000000000000000000000000000000000000000000000000;
+    init_bitboard();
 
-    boardDescription.enPassant = 64; // no enPassant allowed
-    boardDescription.half_moves = 0;
-    boardDescription.rook = 0b00001111; // 4 rocks are possible
-
-    init();
-
-};
-
-void displayGame(int player) {
-    int tab[64];
-    bitBoardToArray(boardDescription.boards, tab);
-    displayBoard(tab);
 }
 
-bool jouerCoup(char *positionSrc, char *positionDest) {
-    int  indiceSrc = validerCoup(positionSrc);
-    int  indiceDest = validerCoup(positionDest);
-    int playerToMove = 0;
+void displayGame(BoardDescription *boardDescription,int color,char nameJoueur[2][20]) {
+    int tab[64];
+    bitBoardToArray(boardDescription->boards, tab);
+    displayBoard(tab,color,nameJoueur);
+}
 
+int jouerCoup(BoardDescription *boardDescription,char *positionSrc, char *positionDest, int color) {
+    int  indiceSrc = validerCoup(boardDescription,positionSrc);
+    int  indiceDest = validerCoup(boardDescription,positionDest);
+
+    printf("ENTREE\n");
     if (indiceSrc == -1 || indiceDest == -1 || indiceSrc == indiceDest) {
-        return false;
+        return 0;
     }
-
     uint64_t colorBitboard =
-            boardDescription.boards[playerToMove][0] | boardDescription.boards[playerToMove][1] |
-            boardDescription.boards[playerToMove][2] |
-            boardDescription.boards[playerToMove][3] | boardDescription.boards[playerToMove][4] |
-            boardDescription.boards[playerToMove][5];
+            boardDescription->boards[color][0] | boardDescription->boards[color][1] |
+            boardDescription->boards[color][2] |
+            boardDescription->boards[color][3] | boardDescription->boards[color][4] |
+            boardDescription->boards[color][5];
     if ((colorBitboard & (uint64_t) pow(2,indiceDest)) != 0) {
-        return false;
+        return 0;
     }
+    printf("VALIDATION SAISIE\n");
+
     int piece;
-    piece = findPiece(indiceSrc);
-
-
+    int piece_temp;
+    piece = findPiece(boardDescription,indiceSrc,color);
+    printf("PIECE TROUVE : %d\n",piece);
     switch (piece) {
         case -1 :
-            return false;
+            return 0;
         case 0 :
-            printf("pawn not implemented");
+            if(!pawnValidation(boardDescription,indiceSrc, indiceDest, color)){
+                return 0;
+            }
+            printf("PAWN VALIDATION\n");
+            piece_temp = killPiece(boardDescription,indiceDest,color);
+            printf("KILL TEMP VALIDATION\n");
+            movePiece(boardDescription,indiceSrc,indiceDest,piece,color);
+            printf("MOVE VALIDATION\n");
+            if (isCheck(boardDescription,color)) {
+                printf("IS CHECK VALIDATION\n");
+                killPiece(boardDescription,indiceDest,color);
+                printf("KILL UNDO VALIDATION\n");
+                movePiece(boardDescription,indiceDest,indiceSrc,piece,color);
+                printf("MOVE UNDO VALIDATION\n");
+                if (piece_temp != -1)
+                    resurrectPiece(boardDescription,indiceDest,piece_temp,color);
+                printf("RESERUCTION VALIDATION\n");
+                return 0;
+            }
+            printf("NO ChECK VALIDATION\n");
+            int sign = 1;
+            if (color == 1){
+                sign = -1;
+            }
+            printf("--> %d\n",boardDescription->enPassant );
+            if(indiceDest == boardDescription->enPassant){
+                killPiece(boardDescription,indiceDest+(8*-sign),color);
+                printf("KILL ENPASSANT VALIDATION\n");
+            }
+            boardDescription->enPassant=64;
+            if (indiceDest == (indiceSrc +(sign*16)))
+                boardDescription->enPassant=indiceSrc+(8*sign);
+            if ((indiceDest>=0 && indiceDest<=7) || (indiceDest>=56 && indiceDest<=63))
+                return 2;
             break;
         case 1 :
-            printf("knight not implemented");
+            if (!knightValidation(boardDescription,indiceSrc,indiceDest))
+                return 0;
+            piece_temp = killPiece(boardDescription,indiceDest,color);
+            movePiece(boardDescription,indiceSrc,indiceDest,piece,color);
+            if (isCheck(boardDescription,color)) {
+                killPiece(boardDescription,indiceDest, color);
+                movePiece(boardDescription,indiceDest, indiceSrc, piece, color);
+                if (piece_temp != -1)
+                    resurrectPiece(boardDescription,indiceDest, piece_temp, color);
+                return 0;
+            }
             break;
         case 2 :
-            printf("bishop not implemented");
+            if (!bishopValidation(boardDescription,indiceSrc,indiceDest))
+                return 0;
+            piece_temp = killPiece(boardDescription,indiceDest,color);
+            movePiece(boardDescription,indiceSrc,indiceDest,piece,color);
+            if (isCheck(boardDescription,color)) {
+                killPiece(boardDescription,indiceDest, color);
+                movePiece(boardDescription,indiceDest, indiceSrc, piece, color);
+                if (piece_temp != -1)
+                    resurrectPiece(boardDescription,indiceDest, piece_temp, color);
+                return 0;
+            }
             break;
         case 3 :
-            printf("rook implementation ");
-            return rookValidation(indiceSrc,indiceDest);
+            if (!rookValidation(boardDescription,indiceSrc,indiceDest))
+                return 0;
+            piece_temp = killPiece(boardDescription,indiceDest,color);
+            movePiece(boardDescription,indiceSrc,indiceDest,piece,color);
+            if (isCheck(boardDescription,color)) {
+                killPiece(boardDescription,indiceDest,color);
+                movePiece(boardDescription,indiceDest,indiceSrc,piece,color);
+                if (piece_temp != -1)
+                    resurrectPiece(boardDescription,indiceDest,piece_temp,color);
+                return 0;
+            }
+            if (indiceSrc == 0)
+                boardDescription->castling = (boardDescription->castling & 0b1110);
+            if (indiceSrc == 7)
+                boardDescription->castling = (boardDescription->castling & 0b1101);
+            if (indiceSrc == 56)
+                boardDescription->castling = (boardDescription->castling & 0b1011);
+            if (indiceSrc == 63)
+                boardDescription->castling = (boardDescription->castling & 0b0111);
+            printf(" %d\n",boardDescription->castling);
             break;
         case 4 :
-            printf("queen not implemented");
+            if (!queenValidation(boardDescription,indiceSrc,indiceDest))
+                return 0;
+            piece_temp = killPiece(boardDescription,indiceDest,color);
+            movePiece(boardDescription,indiceSrc,indiceDest,piece,color);
+            if (isCheck(boardDescription,color)) {
+                killPiece(boardDescription,indiceDest, color);
+                movePiece(boardDescription,indiceDest, indiceSrc, piece, color);
+                if (piece_temp != -1)
+                    resurrectPiece(boardDescription,indiceDest, piece_temp, color);
+                return 0;
+            }
             break;
         case 5 :
-            printf("king not implemented");
+            if (!kingValidation(boardDescription,indiceSrc,indiceDest)&& !kingCastling(boardDescription,indiceSrc,indiceDest,color))
+                return 0;
+            piece_temp = killPiece(boardDescription,indiceDest,color);
+            movePiece(boardDescription,indiceSrc,indiceDest,piece,color);
+            if (isCheck(boardDescription,color)) {
+                killPiece(boardDescription,indiceDest, color);
+                movePiece(boardDescription,indiceDest, indiceSrc, piece, color);
+                if (piece_temp != -1)
+                    resurrectPiece(boardDescription,indiceDest, piece_temp, color);
+                return 0;
+            }
+            printf("%d\n",boardDescription->castling);
+            if (color == 0 )
+                boardDescription->castling = (boardDescription->castling & 0b1100);
+            else
+                boardDescription->castling = (boardDescription->castling & 0b0011);
+            printf(" %d\n",boardDescription->castling);
             break;
         default:
-            return false;
+            return 0;
 
     }
 
-    //TODO : déplacement de la piéce
 
-    if (isCheck(0)){
-        //TODO déplament inverse
-    }
-
-    //TODO: on continue
-
-
-    return true;
+    return 1;
 }
 
-uint64_t validerCoup(char *position) {
 
-    if (position[0] >= 'a' && position[0] <= 'h' && position[1] >= '1' && position[1] <= '8') {
-        return position[0] - 97 + 8 * (position[1] - 49);
-    }
-    return -1;
-}
-
-//return  -1 = piece not found
-//return  0  = pawn
 //return  1  = knight
 //return  2  = bishop
 //return  3  = rook
 //return  4  = queen
-//return  5  = king
-int8_t findPiece(int indiceSrc) {
-    uint64_t bitboardSrc = pow(2,indiceSrc);
-    uint64_t halfColorBitboard, colorBitboard;
-    int halfIndex, piece, playerToMove = 0;
-    colorBitboard =
-            boardDescription.boards[playerToMove][0] | boardDescription.boards[playerToMove][1] |
-            boardDescription.boards[playerToMove][2] |
-            boardDescription.boards[playerToMove][3] | boardDescription.boards[playerToMove][4] |
-            boardDescription.boards[playerToMove][5];
-    // Test if player want to move piece of his color
-    if ((colorBitboard & bitboardSrc) == 0) {
-        return -1;
-    }
-    // Find out which half the chess piece is in
-    halfColorBitboard = boardDescription.boards[playerToMove][0] | boardDescription.boards[playerToMove][1] |
-                        boardDescription.boards[playerToMove][2];
-    if ((halfColorBitboard & bitboardSrc) != 0) {
-        halfIndex = 0;
-    } else {
-        halfIndex = 1;
-    }
-    //Find the piece
-    if ((boardDescription.boards[playerToMove][0 + halfIndex * 3] & bitboardSrc) != 0)
-        piece = halfIndex * 3 + 0;
-    else if ((boardDescription.boards[playerToMove][1 + halfIndex * 3] & bitboardSrc) != 0)
-        piece = halfIndex * 3 + 1;
-    else
-        piece = halfIndex * 3 + 2;
-    return piece;
-}
+bool promotion(BoardDescription *boardDescription, char *positionDest, int color, int piece){
 
-bool rookValidation(int indiceSrc, int indiceDest) {
-    uint64_t fullBitboard =
-            boardDescription.boards[0][0] | boardDescription.boards[0][1] | boardDescription.boards[0][2] |
-            boardDescription.boards[0][3] | boardDescription.boards[0][4] | boardDescription.boards[0][5] |
-            boardDescription.boards[1][0] | boardDescription.boards[1][1] | boardDescription.boards[1][2] |
-            boardDescription.boards[1][3] | boardDescription.boards[1][4] | boardDescription.boards[1][5];
-    uint64_t rookAttacks = rook_attacks(indiceSrc,fullBitboard);
-    uint64_t destinationBitboard = pow(2,indiceDest);
-    if ((rookAttacks & destinationBitboard) ==0){
+    int  indiceDest = validerCoup(boardDescription,positionDest);
+    if (indiceDest == -1 ) {
         return false;
     }
-
-    return true;
-}
-
-uint64_t colorAtacks(int color){
-
-    uint64_t attacks=0;
-    uint64_t pos =1;
-    uint64_t fullBitboard =
-            boardDescription.boards[0][0] | boardDescription.boards[0][1] | boardDescription.boards[0][2] |
-            boardDescription.boards[0][3] | boardDescription.boards[0][4] | boardDescription.boards[0][5] |
-            boardDescription.boards[1][0] | boardDescription.boards[1][1] | boardDescription.boards[1][2] |
-            boardDescription.boards[1][3] | boardDescription.boards[1][4] | boardDescription.boards[1][5];
-    for (int i=0; i<64 ; i++){
-
-
-        //Find the piece
-        if ((boardDescription.boards[color][0] & pos) != 0)
-            attacks = (attacks | pawn_attacks(color,i));
-        else if ((boardDescription.boards[color][1] & pos) != 0)
-            attacks = (attacks | knight_attacks(i));
-        else if ((boardDescription.boards[color][2] & pos) != 0)
-            attacks = (attacks | bishop_attacks(i,fullBitboard));
-        else if ((boardDescription.boards[color][3] & pos) != 0)
-            attacks = (attacks | rook_attacks(i,fullBitboard));
-        else if ((boardDescription.boards[color][4] & pos) != 0)
-            attacks = (attacks | queen_attacks(i,fullBitboard));
-        else if ((boardDescription.boards[color][5] & pos) != 0)
-            attacks = (attacks | king_attacks(i));
-
-        pos = pos <<1;
-    }
-}
-bool isCheck(int color){
-    if ((colorAtacks((color+1)%2) & boardDescription.boards[color][5]) != 0 ){
-        return true;
+    if (piece>0 && piece<5){
+        boardDescription->boards[color][piece] = boardDescription->boards[color][piece] + (uint64_t) pow(2,indiceDest);
+        boardDescription->boards[color][0] = boardDescription->boards[color][0] - (uint64_t) pow(2,indiceDest);
+        return true; 
     }
     return false;
 }
-
-void pieceMouving(int indiceSrc, int indiceDest, int piece, int color){
-
-    boardDescription.boards[color][piece] -= pow(2,indiceSrc);
-    boardDescription.boards[color][piece] += pow(2,indiceDest);
-}
-

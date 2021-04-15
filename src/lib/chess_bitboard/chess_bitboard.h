@@ -2,8 +2,8 @@
 // Created by elcoleoptero on 30/03/2021.
 //
 
-#ifndef CHES_BITBOARD_H
-#define CHES_BITBOARD_H
+#ifndef CHES_CHESS_BITBOARD_H
+#define CHES_CHESS_BITBOARD_H
 #include <inttypes.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -31,7 +31,7 @@ uint64_t rook_attacks(int sq, uint64_t occ) ;
 uint64_t bishop_attacks(int sq, uint64_t occ) ;
 uint64_t queen_attacks(int sq, uint64_t occ);
 uint64_t next_subset(const uint64_t Set, const uint64_t subset);
-void init();
+void init_bitboard();
 void init_piece(bool rook, int sq);
 void printSize();
-#endif //CHES_BITBOARD_H
+#endif //CHES_CHESS_BITBOARD_H

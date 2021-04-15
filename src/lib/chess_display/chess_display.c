@@ -2,7 +2,7 @@
 // Created by elcoleoptero on 30/03/2021.
 //
 
-#include "display_chess.h"
+#include "chess_display.h"
 /*
 void main()
 {
@@ -20,10 +20,16 @@ void displayBoard(int board_array[], int couleurJoueur, char nameJoueur[2][20])
     char *couleur[] = {"\033[0;37m", "\033[0;30m"};
     char *couleurs_fond[] = {"\033[43m", "\033[45m"};
 
-    printf(" A B C D E F G H\n");
+    if (couleurJoueur == 0)
+        printf(" A B C D E F G H\n");
+    else 
+        printf(" H G F E D C B A\n");
     for (int i = 7; i > -1; i--)
     {
-        printf("\033[0;37m%d", i + 1);
+        if (couleurJoueur == 0)
+            printf("\033[0;37m%d", i + 1);
+        else 
+            printf("\033[0;37m%d", 8-i);
         int case_couleur = i % 2;
         for (int j = 0; j < 8; j++)
         {
