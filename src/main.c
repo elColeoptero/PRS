@@ -39,7 +39,7 @@ int main(int argc, char const *argv[])
             if (argc > 1)
                 strncpy(thePlayers->namePlayer[1], argv[1], 20);
             else
-                strncpy(thePlayers->namePlayer[1], "Annonyme", 20);
+                strncpy(thePlayers->namePlayer[1], "Anonyme", 20);
 
             printf("Vous allez rejoindre la partie. \nMerci de patienter pour le premier coup de votre adversaire \n");
             kill(thePlayers->playersIndex[0], SIGUSR1);
@@ -52,7 +52,7 @@ int main(int argc, char const *argv[])
         if (argc > 1)
             strncpy(thePlayers->namePlayer[0], argv[1], 20);
         else
-            strncpy(thePlayers->namePlayer[0], "Annonyme", 20);
+            strncpy(thePlayers->namePlayer[0], "Anonyme", 20);
 
         break;
 
@@ -154,8 +154,9 @@ void signalHandler(int signalNum)
         sem_wait(gameAccess);
         do
         {
-            printf("Jouez une coup sous la forme : source-destination \n");
+            printf("Jouez une coup (entré pour continuer) ! \n source :\n");
             lire(SrcMove, 3);
+            printf("\n destination  :\n");
             lire(DestMove, 3);
             returnjouerCoup = jouerCoup(theGame, SrcMove, DestMove, color);
             //saisiUser();
