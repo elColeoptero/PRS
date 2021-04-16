@@ -1,15 +1,18 @@
-//
-// Created by elcoleoptero on 12/04/2021.
-//
+/*******************************************************
+Nom ......... : main.c
+Role ........ : Permet d'effectuer des actions sur l'echéquier
+                Utilise les fonctions du bitboard.c
+Auteur ...... : SAINT-OMER
+
+********************************************************/
 
 #include "../chess_action/chess_action.h"
-#include "../chess_display/chess_display.h"
 
 /*******************************************************
 Nom ......... : validerCoup
 Role ........ :
-Arg ......... : *boardDescription : 
-                *position      : 
+Arg ......... : *boardDescription : référence vers la structure contenant la partie
+                *position      :  input to validate
 Return....... : uint64_t
 
 ********************************************************/
@@ -24,21 +27,21 @@ uint64_t validerCoup(BoardDescription *boardDescription, char *position)
     return -1;
 }
 
-//return  -1 = piece not found
-//return  0  = pawn
-//return  1  = knight
-//return  2  = bishop
-//return  3  = rook
-//return  4  = queen
-//return  5  = king
 
 /*******************************************************
 Nom ......... : findPiece
 Role ........ :
-Arg ......... : *boardDescription : 
-                indiceSrc      : 
-                color : 
-Return....... : int8_t
+Arg ......... : *boardDescription : référence vers la structure contenant la partie
+                indiceSrc      : l'indice de la case source
+                color : color of player
+Return....... : int8_t : 
+                    -1 = piece not found
+                    0  = pawn
+                    1  = knight
+                    2  = bishop
+                    3  = rook
+                    4  = queen
+                    5  = king
 
 ********************************************************/
 int8_t findPiece(BoardDescription *boardDescription, int indiceSrc, int color)
@@ -81,9 +84,9 @@ int8_t findPiece(BoardDescription *boardDescription, int indiceSrc, int color)
 /*******************************************************
 Nom ......... : rookValidation
 Role ........ :
-Arg ......... : *boardDescription : 
-                indiceSrc      : 
-                indiceDest :
+Arg ......... : *boardDescription : référence vers la structure contenant la partie
+                indiceSrc      : l'indice de la case source
+                indiceDest :l'indice de la case destination
 Return....... : bool
 
 ********************************************************/
@@ -107,9 +110,9 @@ bool rookValidation(BoardDescription *boardDescription, int indiceSrc, int indic
 /*******************************************************
 Nom ......... : bishopValidation
 Role ........ :
-Arg ......... : *boardDescription : 
-                indiceSrc      : 
-                indiceDest :
+Arg ......... : *boardDescription : référence vers la structure contenant la partie
+                indiceSrc      : l'indice de la case source
+                indiceDest :l'indice de la case destination
 Return....... : bool
 
 ********************************************************/
@@ -137,8 +140,8 @@ bool bishopValidation(BoardDescription *boardDescription, int indiceSrc, int ind
 /*******************************************************
 Nom ......... : queenValidation
 Role ........ :
-Arg ......... : *boardDescription : 
-                indiceSrc      : 
+Arg ......... : *boardDescription : référence vers la structure contenant la partie
+                indiceSrc      : l'indice de la case source
                 indiceDest :
 Return....... : bool
 
@@ -163,9 +166,9 @@ bool queenValidation(BoardDescription *boardDescription, int indiceSrc, int indi
 /*******************************************************
 Nom ......... : knightValidation
 Role ........ :
-Arg ......... : *boardDescription : 
-                indiceSrc      : 
-                indiceDest :
+Arg ......... : *boardDescription : référence vers la structure contenant la partie
+                indiceSrc      : l'indice de la case source
+                indiceDest :l'indice de la case destination
 Return....... : bool
 
 ********************************************************/
@@ -188,10 +191,10 @@ bool knightValidation(BoardDescription *boardDescription, int indiceSrc, int ind
 /*******************************************************
 Nom ......... : kingCastling
 Role ........ :
-Arg ......... : *boardDescription : 
-                indiceSrc      : 
-                indiceDest :
-                color : 
+Arg ......... : *boardDescription : référence vers la structure contenant la partie
+                indiceSrc      : l'indice de la case source
+                indiceDest :l'indice de la case destination
+                color : color of player
 Return....... : bool
 
 ********************************************************/
@@ -264,9 +267,9 @@ bool kingCastling(BoardDescription *boardDescription, int indiceSrc, int indiceD
 /*******************************************************
 Nom ......... : kingValidation
 Role ........ :
-Arg ......... : *boardDescription : 
-                indiceSrc      : 
-                indiceDest :
+Arg ......... : *boardDescription : référence vers la structure contenant la partie
+                indiceSrc      : l'indice de la case source
+                indiceDest :l'indice de la case destination
 Return....... : bool
 
 ********************************************************/
@@ -288,10 +291,10 @@ bool kingValidation(BoardDescription *boardDescription, int indiceSrc, int indic
 /*******************************************************
 Nom ......... : pawnValidation
 Role ........ :
-Arg ......... : *boardDescription : 
-                indiceSrc      : 
-                indiceDest :
-                color : 
+Arg ......... : *boardDescription : référence vers la structure contenant la partie
+                indiceSrc      : l'indice de la case source
+                indiceDest :l'indice de la case destination
+                color : color of player
 Return....... : bool
 
 ********************************************************/
@@ -318,19 +321,14 @@ bool pawnValidation(BoardDescription *boardDescription, int indiceSrc, int indic
         sign = -1;
         line = 47;
     }
-
-    // TODO : pawn +1
     if ((indiceSrc + (8 * sign)) == indiceDest && (fullBitboard & destinationBitboard) == 0)
     {
         return true;
     }
-    // TODO : pawn +2
     if ((indiceSrc + (16 * sign)) == indiceDest && (fullBitboard & destinationBitboard) == 0 && indiceSrc > line && indiceSrc < (line + 9))
     {
         return true;
     }
-    // TODO : pawn attacks
-    // TODO : EN PASSANT
     if ((pawnAttacks & destinationBitboard) != 0)
         if ((fullBitboard & destinationBitboard) != 0 || indiceDest == boardDescription->enPassant)
         {
@@ -342,8 +340,8 @@ bool pawnValidation(BoardDescription *boardDescription, int indiceSrc, int indic
 /*******************************************************
 Nom ......... : colorAtacks
 Role ........ :
-Arg ......... : *boardDescription : 
-                color : 
+Arg ......... : *boardDescription : référence vers la structure contenant la partie
+                color : color of player
 Return....... : uint64_t
 
 ********************************************************/
@@ -384,8 +382,8 @@ uint64_t colorAtacks(BoardDescription *boardDescription, int color)
 /*******************************************************
 Nom ......... : isCheck
 Role ........ :
-Arg ......... : *boardDescription : 
-                color : 
+Arg ......... : *boardDescription : référence vers la structure contenant la partie
+                color : color of player
 Return....... : bool
 
 ********************************************************/
@@ -404,11 +402,11 @@ bool isCheck(BoardDescription *boardDescription, int color)
 /*******************************************************
 Nom ......... : movePiece
 Role ........ :
-Arg ......... : *boardDescription : 
-                indiceSrc :
-                indiceDest :
+Arg ......... : *boardDescription : référence vers la structure contenant la partie
+                indiceSrc : l'indice de la case source
+                indiceDest :l'indice de la case destination
                 piece :
-                color : 
+                color : color of player
 Return....... : void
 
 ********************************************************/
@@ -422,9 +420,9 @@ void movePiece(BoardDescription *boardDescription, int indiceSrc, int indiceDest
 /*******************************************************
 Nom ......... : killPiece
 Role ........ :
-Arg ......... : *boardDescription : 
-		        indiceDest : 
-                color : 
+Arg ......... : *boardDescription : référence vers la structure contenant la partie
+		        indiceDest : l'indice de la case destination
+                color : color of player
 Return....... : int
 
 ********************************************************/
@@ -445,18 +443,12 @@ int killPiece(BoardDescription *boardDescription, int indiceDest, int color)
 /*******************************************************
 Nom ......... : isCheck
 Role ........ :
-Arg ......... : *boardDescription : 
-                color : 
+Arg ......... : *boardDescription : référence vers la structure contenant la partie
+                color : color of player
 Return....... : bool
 
 ********************************************************/
 void resurrectPiece(BoardDescription *boardDescription, int indiceDest, int piece, int color)
 {
-    printf("ENTRE\n");
-    printf("%d\n", indiceDest);
-    printf("%d\n", piece);
-    printf("%d\n", color);
-    printf("%d\n", (color + 1) % 2);
     boardDescription->boards[(color + 1) % 2][piece] = boardDescription->boards[(color + 1) % 2][piece] + (uint64_t)pow(2, indiceDest);
-    printf("SORTIE\n");
 }
