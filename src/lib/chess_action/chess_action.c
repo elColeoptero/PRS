@@ -126,10 +126,6 @@ bool bishopValidation(BoardDescription *boardDescription, int indiceSrc, int ind
         boardDescription->boards[1][3] | boardDescription->boards[1][4] | boardDescription->boards[1][5];
     uint64_t rookAttacks = calc_bishop_attacks(indiceSrc, fullBitboard);
     uint64_t destinationBitboard = (uint64_t)pow(2, indiceDest);
-    bb_to_str(fullBitboard);
-    bb_to_str(rookAttacks);
-    bb_to_str(destinationBitboard);
-    bb_to_str(rookAttacks & destinationBitboard);
     if ((rookAttacks & destinationBitboard) == 0)
     {
         return false;
@@ -355,8 +351,6 @@ uint64_t colorAtacks(BoardDescription *boardDescription, int color)
         boardDescription->boards[0][3] | boardDescription->boards[0][4] | boardDescription->boards[0][5] |
         boardDescription->boards[1][0] | boardDescription->boards[1][1] | boardDescription->boards[1][2] |
         boardDescription->boards[1][3] | boardDescription->boards[1][4] | boardDescription->boards[1][5];
-    printf("JE RENTRE DANS colorAtacks\n");
-    printf("%d\n", color);
     for (int i = 0; i < 64; i++)
     {
         //Find the piece
@@ -375,7 +369,6 @@ uint64_t colorAtacks(BoardDescription *boardDescription, int color)
 
         pos = pos << 1;
     }
-    printf("\nJE RENTRE DANS colorAtacks\n");
     return attacks;
 }
 
@@ -390,13 +383,11 @@ Return....... : bool
 
 bool isCheck(BoardDescription *boardDescription, int color)
 {
-    printf("JE RENTRE DANS ISCHECK\n");
     if ((colorAtacks(boardDescription, (color + 1) % 2) & boardDescription->boards[color][5]) != 0)
     {
         return true;
     }
     return false;
-    printf("JE SORT DE ISCHECK\n");
 }
 
 /*******************************************************
@@ -412,7 +403,6 @@ Return....... : void
 ********************************************************/
 void movePiece(BoardDescription *boardDescription, int indiceSrc, int indiceDest, int piece, int color)
 {
-    //printf("%d -- %d ",indiceSrc,indiceDest);
     boardDescription->boards[color][piece] = boardDescription->boards[color][piece] - (uint64_t)pow(2, indiceSrc);
     boardDescription->boards[color][piece] = boardDescription->boards[color][piece] + (uint64_t)pow(2, indiceDest);
 }
@@ -442,7 +432,7 @@ int killPiece(BoardDescription *boardDescription, int indiceDest, int color)
 
 /*******************************************************
 Nom ......... : isCheck
-Role ........ :
+Role ........ : permet de remettre une piéce 
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
                 color : color of player
 Return....... : bool
