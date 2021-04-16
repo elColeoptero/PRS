@@ -1,7 +1,10 @@
-//
-// Created by elcoleoptero on 30/03/2021.
-//
-
+/*******************************************************
+Nom ......... : chess_display.c
+Role ........ : Fichier permettant la gestion des bitboards 
+				il est inspiré du projet M42, une librairies c++ gérant les bitboards magiques
+				plus d'information dans docx/m42.pdf
+Auteur ...... : SAINT-OMER
+********************************************************/
 #ifndef CHES_CHESS_BITBOARD_H
 #define CHES_CHESS_BITBOARD_H
 #include <inttypes.h>

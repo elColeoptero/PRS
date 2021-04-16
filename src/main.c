@@ -40,7 +40,11 @@ int main(int argc, char const *argv[])
             else
                 strncpy(thePlayers->namePlayer[1], "Anonyme", 20);
 
-            printf("Vous allez rejoindre la partie. \nMerci de patienter pour le premier coup de votre adversaire \n");
+            //printf("Vous allez rejoindre la partie. \nMerci de patienter pour le premier coup de votre adversaire \n");
+            sem_wait(gameAccess);
+                displayGame(theGame, color, thePlayers->namePlayer);
+            sem_post(gameAccess);
+            printf("Votre adversaire joue...\n");
             kill(thePlayers->playersIndex[0], SIGUSR1);
             break;
         }
@@ -88,14 +92,15 @@ void initVar(int color_conf, int key)
         gameAccess = sem_open("gameAccess", 0);
     }
     theGame = shmat(shmid_partie, NULL, 0);
+    thePlayers->playersIndex[color_conf] = getpid();
+    color = color_conf;
     if (color_conf == 0)
         initBoard(theGame);
     else
     {
         init_bitboard();
     }
-    thePlayers->playersIndex[color_conf] = getpid();
-    color = color_conf;
+    
 }
 
 /*******************************************************
@@ -155,15 +160,14 @@ void signalHandler(int signalNum)
             shmctl(shmid_partie, IPC_RMID, NULL);
             exit(1);
         }
-
         sem_post(gameAccess);
 
         sem_wait(gameAccess);
         do
         {
-            printf("Jouez une coup (entré pour continuer) ! \n source :\n");
+            printf("Jouez une coup (entrer pour continuer) ! \nSource : ");
             lire(SrcMove, 3);
-            printf("\n destination  :\n");
+            printf("Destination  : ");
             lire(DestMove, 3);
             returnjouerCoup = jouerCoup(theGame, SrcMove, DestMove, color);
             if (returnjouerCoup == 2)
@@ -182,13 +186,12 @@ void signalHandler(int signalNum)
             shmdt(theGame);
             exit(1);
         }
-
         sem_post(gameAccess);
         kill(thePlayers->playersIndex[(color + 1) % 2], SIGUSR1);
-        puts("Votre adversaire joue...");
+        printf("Votre adversaire joue...\n");
         break;
     case SIGUSR2:
-        puts("\n\nVotre adversaire a décidé de quitter la partie vous gagnez par forfait. \nVictoire ! ");
+        printf("\n\nVotre adversaire a décidé de quitter la partie vous gagnez par forfait. \nVictoire ! ");
         sem_close(gameAccess);
         sem_unlink("gameAccess");
         shmdt(thePlayers);

@@ -7,10 +7,10 @@ Auteur ...... : SAINT-OMER
 ********************************************************/
 
 #include "../chess_action/chess_action.h"
-
+#include <math.h>
 /*******************************************************
 Nom ......... : validerCoup
-Role ........ :
+Role ........ : vérifie la validité de la saisie utilisateur
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
                 *position      :  input to validate
 Return....... : uint64_t
@@ -30,7 +30,7 @@ uint64_t validerCoup(BoardDescription *boardDescription, char *position)
 
 /*******************************************************
 Nom ......... : findPiece
-Role ........ :
+Role ........ : permet de trouver la piéce si situant sur la case
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
                 indiceSrc      : l'indice de la case source
                 color : color of player
@@ -83,7 +83,7 @@ int8_t findPiece(BoardDescription *boardDescription, int indiceSrc, int color)
 
 /*******************************************************
 Nom ......... : rookValidation
-Role ........ :
+Role ........ : vérifie la validité du déplacement de la tour
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
                 indiceSrc      : l'indice de la case source
                 indiceDest :l'indice de la case destination
@@ -109,7 +109,7 @@ bool rookValidation(BoardDescription *boardDescription, int indiceSrc, int indic
 
 /*******************************************************
 Nom ......... : bishopValidation
-Role ........ :
+Role ........ : vérifie la validité du déplacement du fou
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
                 indiceSrc      : l'indice de la case source
                 indiceDest :l'indice de la case destination
@@ -135,7 +135,7 @@ bool bishopValidation(BoardDescription *boardDescription, int indiceSrc, int ind
 
 /*******************************************************
 Nom ......... : queenValidation
-Role ........ :
+Role ........ :  vérifie la validité du déplacement de la dame
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
                 indiceSrc      : l'indice de la case source
                 indiceDest :
@@ -161,7 +161,7 @@ bool queenValidation(BoardDescription *boardDescription, int indiceSrc, int indi
 
 /*******************************************************
 Nom ......... : knightValidation
-Role ........ :
+Role ........ : vérifie la validité du déplacement du cavalier
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
                 indiceSrc      : l'indice de la case source
                 indiceDest :l'indice de la case destination
@@ -186,7 +186,7 @@ bool knightValidation(BoardDescription *boardDescription, int indiceSrc, int ind
 
 /*******************************************************
 Nom ......... : kingCastling
-Role ........ :
+Role ........ : vérifie la validité du déplacement du pion si il s'agit d'un rock
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
                 indiceSrc      : l'indice de la case source
                 indiceDest :l'indice de la case destination
@@ -262,7 +262,7 @@ bool kingCastling(BoardDescription *boardDescription, int indiceSrc, int indiceD
 
 /*******************************************************
 Nom ......... : kingValidation
-Role ........ :
+Role ........ : vérifie la validité du déplacement du roi
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
                 indiceSrc      : l'indice de la case source
                 indiceDest :l'indice de la case destination
@@ -286,7 +286,7 @@ bool kingValidation(BoardDescription *boardDescription, int indiceSrc, int indic
 
 /*******************************************************
 Nom ......... : pawnValidation
-Role ........ :
+Role ........ : vérifie la validité du déplacement du pion
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
                 indiceSrc      : l'indice de la case source
                 indiceDest :l'indice de la case destination
@@ -335,7 +335,7 @@ bool pawnValidation(BoardDescription *boardDescription, int indiceSrc, int indic
 
 /*******************************************************
 Nom ......... : colorAtacks
-Role ........ :
+Role ........ : génére un bitboard correspondant à toutes les cases attaquée par une couleur
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
                 color : color of player
 Return....... : uint64_t
@@ -374,10 +374,10 @@ uint64_t colorAtacks(BoardDescription *boardDescription, int color)
 
 /*******************************************************
 Nom ......... : isCheck
-Role ........ :
+Role ........ : vérifie si le roi est en position d'echec 
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
                 color : color of player
-Return....... : bool
+Return....... : bool 
 
 ********************************************************/
 
@@ -392,7 +392,7 @@ bool isCheck(BoardDescription *boardDescription, int color)
 
 /*******************************************************
 Nom ......... : movePiece
-Role ........ :
+Role ........ : permet de déplacer la piéce
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
                 indiceSrc : l'indice de la case source
                 indiceDest :l'indice de la case destination
@@ -409,7 +409,7 @@ void movePiece(BoardDescription *boardDescription, int indiceSrc, int indiceDest
 
 /*******************************************************
 Nom ......... : killPiece
-Role ........ :
+Role ........ : permet de retirer une piece du plateau
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
 		        indiceDest : l'indice de la case destination
                 color : color of player
@@ -432,7 +432,7 @@ int killPiece(BoardDescription *boardDescription, int indiceDest, int color)
 
 /*******************************************************
 Nom ......... : isCheck
-Role ........ : permet de remettre une piéce 
+Role ........ : permet de remettre une piéce qui viens d'être prise
 Arg ......... : *boardDescription : référence vers la structure contenant la partie
                 color : color of player
 Return....... : bool
