@@ -7,6 +7,14 @@ Auteur ...... : POLAN
 
 #include "chess_display.h"
 
+/*******************************************************
+Nom ......... : displayBoard
+Role ........ : Affiche le board dans la console
+Arg ......... : board_array[]  : Board à afficher
+		        couleurJoueur : Couleur du joueur 1 -> Blanc / 2-> Noir
+                nameJoueur[2][20]: Tableau avec le nom des joueurs
+Return....... : void
+********************************************************/
 void displayBoard(int board_array[], int couleurJoueur, char nameJoueur[2][20])
 {
     char *caracteres[] = {"\u265F ", "\u265E ", "\u2657 ", "\u265C ", "\u265B ", "\u265A ", "\u265F ", "\u265E ", "\u2657 ", "\u265C ", "\u265B ", "\u265A ", "  "};
@@ -57,6 +65,14 @@ void displayBoard(int board_array[], int couleurJoueur, char nameJoueur[2][20])
     }
 }
 
+/*******************************************************
+Nom ......... : bitBoardToArray
+Role ........ : Transforme les bitboard en un tableau contenant les référence des pieces
+Arg ......... : boards[2][6] : Tous les bits board (des pieces et des 2 couleurs)
+		        tab[]: Réference du tableau de destination 
+                (contient un int représentant les pieces)
+Return....... : void
+********************************************************/
 void bitBoardToArray(uint64_t boards[2][6], int tab[])
 {
     uint64_t board, white, moitie, pos = 1;
@@ -96,6 +112,13 @@ void bitBoardToArray(uint64_t boards[2][6], int tab[])
         pos = pos << 1;
     }
 }
+/*******************************************************
+Nom ......... : bb_to_str
+Role ........ : Afficher les bits 0 ou 1 sur un entier de 64 bits
+                Répresentation binaire
+Arg ......... : b1  : entier sur 64 bits
+Return....... : void
+********************************************************/
 
 void bb_to_str(uint64_t b1)
 {
