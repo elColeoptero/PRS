@@ -267,16 +267,16 @@ int isOver(BoardDescription *boardDescription, int color)
     {
         if (isCheck(boardDescription, color))
         {
-            printf("Echec et mat : Fin de la partie ");
+            printf("\nEchec et mat : Fin de la partie\n");
 
             return 1;
         }
-        printf("Règle du PAT  :Partie NULL ");
+        printf("\nRègle du PAT  :Partie NULL \n");
         return 2;
     }
     if (boardDescription->half_moves > 50)
     {
-        printf("Règle des 50 coups  :Partie NULL ");
+        printf("\nRègle des 50 coups  :Partie NULL \n");
         return 3;
     }
 

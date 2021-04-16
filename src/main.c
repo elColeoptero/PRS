@@ -145,13 +145,13 @@ void signalHandler(int signalNum)
         sem_post(gameAccess);
 
         sem_wait(gameAccess);
-        if (
-            isOver(theGame, color > 0))
+        if (isOver(theGame, color > 0))
         {
             sem_close(gameAccess);
             sem_unlink("gameAccess");
             shmdt(thePlayers);
             shmdt(theGame);
+            shmctl(shmid, IPC_RMID, NULL);
             shmctl(shmid_partie, IPC_RMID, NULL);
             exit(1);
         }
@@ -173,9 +173,10 @@ void signalHandler(int signalNum)
         system("clear");
         sem_wait(gameAccess);
         displayGame(theGame, color, thePlayers->namePlayer);
-        printf("is over : %d", isOver(theGame, color));
         if (isOver(theGame, (color + 1) % 2) > 0)
         {
+            sem_post(gameAccess);
+            kill(thePlayers->playersIndex[(color + 1) % 2], SIGUSR1);
             sem_close(gameAccess);
             shmdt(thePlayers);
             shmdt(theGame);
