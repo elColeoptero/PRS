@@ -1,7 +1,7 @@
 /*******************************************************
 Nom ......... : main.c
 Role ........ : Permet de lancer ou de rejoindre une partie
-Auteur ...... : Saint-Omer/POLAN
+Auteur ...... : POLAN
 
 ********************************************************/
 #include "main.h"
@@ -29,7 +29,7 @@ int main(int argc, char const *argv[])
         shmid = shmget(key, 2 * sizeof(pid_t), 0666);
         if ((nattch(shmid)) > 1)
         {
-            printf("trop de joueur déso\n");
+            printf("trop de joueur désolé\n");
             exit(1);
         }
 
@@ -47,7 +47,7 @@ int main(int argc, char const *argv[])
         }
 
     case 0:
-        printf("Creation partie. Vous êtes le premier joueur...\n");
+        printf("Creation partie.\nVous êtes le premier joueur veuillez attendre un adversaire...\n");
         initVar(0, shmid, key);
         if (argc > 1)
             strncpy(thePlayers->namePlayer[0], argv[1], 20);

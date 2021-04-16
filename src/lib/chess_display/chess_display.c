@@ -1,18 +1,11 @@
-//
-// Created by elcoleoptero on 30/03/2021.
-//
+/*******************************************************
+Nom ......... : chess_display.c
+Role ........ : Fichier contenant le nécessaire pour 
+                l'affichage du jeu
+Auteur ...... : POLAN
+********************************************************/
 
 #include "chess_display.h"
-/*
-void main()
-{
-    int board_array[] = {3, 1, 2, 4, 5, 2, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 6, 6, 6, 6, 6, 6, 6, 6, 9, 7, 8, 10, 11, 8, 7, 9};
-    char nameJoueur[2][20];
-    strcpy(nameJoueur[0], "POLAN");
-    strcpy(nameJoueur[1], "SAM");
-
-    displayBoard(board_array, 1, nameJoueur);
-}*/
 
 void displayBoard(int board_array[], int couleurJoueur, char nameJoueur[2][20])
 {
@@ -22,14 +15,14 @@ void displayBoard(int board_array[], int couleurJoueur, char nameJoueur[2][20])
 
     if (couleurJoueur == 0)
         printf(" A B C D E F G H\n");
-    else 
+    else
         printf(" H G F E D C B A\n");
     for (int i = 7; i > -1; i--)
     {
         if (couleurJoueur == 0)
             printf("\033[0;37m%d", i + 1);
-        else 
-            printf("\033[0;37m%d", 8-i);
+        else
+            printf("\033[0;37m%d", 8 - i);
         int case_couleur = i % 2;
         for (int j = 0; j < 8; j++)
         {
@@ -122,41 +115,4 @@ void bb_to_str(uint64_t b1)
     }
     printf("   +---+---+---+---+---+---+---+---+\n");
     printf("     a   b   c   d   e   f   g   h  \n");
-}
-
-void bb_to_str_bis(uint64_t b1, uint64_t b2, uint64_t b3)
-{
-    for (int r = 7; r >= 0; --r)
-    {
-        printf("   +---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+\n");
-        printf(" %d |", r + 1);
-        for (int f = 0; f <= 7; ++f)
-        {
-            if ((b1 & (1ULL << ((r << 3) | f))))
-                printf(" X |");
-            else
-                printf("   |");
-        }
-        printf("    |");
-
-        for (int f = 0; f <= 7; ++f)
-        {
-            if ((b2 & (1ULL << ((r << 3) | f))))
-                printf(" X |");
-            else
-                printf("   |");
-        }
-        printf("    |");
-
-        for (int f = 0; f <= 7; ++f)
-        {
-            if ((b3 & (1ULL << ((r << 3) | f))))
-                printf(" X |");
-            else
-                printf("   |");
-        }
-        printf("\n");
-    }
-    printf("   +---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+    +---+---+---+---+---+---+---+---+\n");
-    printf("     a   b   c   d   e   f   g   h        a   b   c   d   e   f   g   h        a   b   c   d   e   f   g   h  \n");
 }
