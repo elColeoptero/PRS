@@ -25,5 +25,6 @@ struct sigaction newact;
 void displayShmInfo(int Id);
 int nattch(int Id);
 void signalHandler(int signalNum);
-void initVar(int color_conf, int shmid, int key);
+void initVar(int color_conf, int key);
+int shmid_partie, shmid;
 int color;

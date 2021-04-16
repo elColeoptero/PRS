@@ -13,7 +13,6 @@ BoardDescription *theGame;
 
 int main(int argc, char const *argv[])
 {
-    int shmid;
     key_t key;
     key = ftok("/usr", 'R');
     newact.sa_handler = signalHandler;
@@ -22,11 +21,11 @@ int main(int argc, char const *argv[])
     sigaction(SIGUSR1, &newact, NULL);
     sigaction(SIGUSR2, &newact, NULL);
     system("clear");
-    shmid = shmget(key, 2 * sizeof(pid_t), 0666 | IPC_CREAT | IPC_EXCL);
+    shmid = shmget(key, sizeof(InfoPlayers), 0666 | IPC_CREAT | IPC_EXCL);
     switch (errno)
     {
     case 17: //shm already exist
-        shmid = shmget(key, 2 * sizeof(pid_t), 0666);
+        shmid = shmget(key, sizeof(InfoPlayers), 0666);
         if ((nattch(shmid)) > 1)
         {
             printf("trop de joueur désolé\n");
@@ -35,7 +34,7 @@ int main(int argc, char const *argv[])
 
         if ((nattch(shmid)) == 1)
         {
-            initVar(1, shmid, key);
+            initVar(1, key);
             if (argc > 1)
                 strncpy(thePlayers->namePlayer[1], argv[1], 20);
             else
@@ -48,7 +47,7 @@ int main(int argc, char const *argv[])
 
     case 0:
         printf("Creation partie.\nVous êtes le premier joueur veuillez attendre un adversaire...\n");
-        initVar(0, shmid, key);
+        initVar(0, key);
         if (argc > 1)
             strncpy(thePlayers->namePlayer[0], argv[1], 20);
         else
@@ -71,14 +70,12 @@ Nom ......... : initVar
 Role ........ : Permet d'initialiser les zones mémoires et le sémaphore
                 pour les 2 joueurs
 Arg ......... : color_conf : Couleur du joueur
-                shmid      : Id mémoire partagée
                 key        : Clé de la zone mémoire partagée
 Return....... : VOID
 ********************************************************/
 
-void initVar(int color_conf, int shmid, int key)
+void initVar(int color_conf, int key)
 {
-    int shmid_partie;
     thePlayers = shmat(shmid, NULL, 0);
     if (color_conf == 0)
     {
@@ -136,6 +133,8 @@ void signalHandler(int signalNum)
         puts("\n\nVous abandonnez la partie. \nDefaite ! ");
         kill(thePlayers->playersIndex[(color + 1) % 2], SIGUSR2);
         sem_close(gameAccess);
+        shmdt(thePlayers);
+        shmdt(theGame);
         exit(1);
         break;
 
@@ -146,9 +145,17 @@ void signalHandler(int signalNum)
         sem_post(gameAccess);
 
         sem_wait(gameAccess);
-        /*if(gameFinish())
-	    	exit(1);
-	    */
+        if (
+            isOver(theGame, color > 0))
+        {
+            sem_close(gameAccess);
+            sem_unlink("gameAccess");
+            shmdt(thePlayers);
+            shmdt(theGame);
+            shmctl(shmid_partie, IPC_RMID, NULL);
+            exit(1);
+        }
+
         sem_post(gameAccess);
 
         sem_wait(gameAccess);
@@ -159,7 +166,6 @@ void signalHandler(int signalNum)
             printf("\n destination  :\n");
             lire(DestMove, 3);
             returnjouerCoup = jouerCoup(theGame, SrcMove, DestMove, color);
-            //saisiUser();
             if (returnjouerCoup == 2)
                 promotion(theGame, DestMove, color, 4);
         } while (returnjouerCoup == 0);
@@ -167,9 +173,15 @@ void signalHandler(int signalNum)
         system("clear");
         sem_wait(gameAccess);
         displayGame(theGame, color, thePlayers->namePlayer);
-        /*if(gameFinish())
-	    	exit(1);
-	    */
+        printf("is over : %d", isOver(theGame, color));
+        if (isOver(theGame, (color + 1) % 2) > 0)
+        {
+            sem_close(gameAccess);
+            shmdt(thePlayers);
+            shmdt(theGame);
+            exit(1);
+        }
+
         sem_post(gameAccess);
         kill(thePlayers->playersIndex[(color + 1) % 2], SIGUSR1);
         puts("Votre adversaire joue...");
@@ -178,6 +190,10 @@ void signalHandler(int signalNum)
         puts("\n\nVotre adversaire a décidé de quitter la partie vous gagnez par forfait. \nVictoire ! ");
         sem_close(gameAccess);
         sem_unlink("gameAccess");
+        shmdt(thePlayers);
+        shmctl(shmid, IPC_RMID, NULL);
+        shmdt(theGame);
+        shmctl(shmid_partie, IPC_RMID, NULL);
         exit(1);
         break;
     }
