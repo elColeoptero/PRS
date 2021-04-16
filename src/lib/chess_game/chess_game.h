@@ -14,4 +14,7 @@ void displayGame(BoardDescription *boardDescription,int color, char nameJoueur[2
 int jouerCoup(BoardDescription *boardDescription, char *positionSrc, char *positionDest, int color);
 bool promotion(BoardDescription *boardDescription, char *positionDest, int color, int piece);
 
+int verifCoup(BoardDescription *boardDescription,int indiceSrc, int indiceDests, int color);
+int isOver(BoardDescription *boardDescription,int color);
+bool stalemate(BoardDescription *boardDescription,int color);
 #endif //CHES_CHESS_GAME_H

@@ -39,10 +39,14 @@ int jouerCoup(BoardDescription *boardDescription,char *positionSrc, char *positi
     int  indiceSrc = validerCoup(boardDescription,positionSrc);
     int  indiceDest = validerCoup(boardDescription,positionDest);
 
-    printf("ENTREE\n");
     if (indiceSrc == -1 || indiceDest == -1 || indiceSrc == indiceDest) {
         return 0;
     }
+
+    return verifCoup(boardDescription,indiceSrc, indiceDest, color);
+}
+int verifCoup(BoardDescription *boardDescription,int indiceSrc, int indiceDest, int color) {
+
     uint64_t colorBitboard =
             boardDescription->boards[color][0] | boardDescription->boards[color][1] |
             boardDescription->boards[color][2] |
@@ -51,12 +55,10 @@ int jouerCoup(BoardDescription *boardDescription,char *positionSrc, char *positi
     if ((colorBitboard & (uint64_t) pow(2,indiceDest)) != 0) {
         return 0;
     }
-    printf("VALIDATION SAISIE\n");
 
     int piece;
     int piece_temp;
     piece = findPiece(boardDescription,indiceSrc,color);
-    printf("PIECE TROUVE : %d\n",piece);
     switch (piece) {
         case -1 :
             return 0;
@@ -64,35 +66,26 @@ int jouerCoup(BoardDescription *boardDescription,char *positionSrc, char *positi
             if(!pawnValidation(boardDescription,indiceSrc, indiceDest, color)){
                 return 0;
             }
-            printf("PAWN VALIDATION\n");
             piece_temp = killPiece(boardDescription,indiceDest,color);
-            printf("KILL TEMP VALIDATION\n");
             movePiece(boardDescription,indiceSrc,indiceDest,piece,color);
-            printf("MOVE VALIDATION\n");
             if (isCheck(boardDescription,color)) {
-                printf("IS CHECK VALIDATION\n");
                 killPiece(boardDescription,indiceDest,color);
-                printf("KILL UNDO VALIDATION\n");
                 movePiece(boardDescription,indiceDest,indiceSrc,piece,color);
-                printf("MOVE UNDO VALIDATION\n");
                 if (piece_temp != -1)
                     resurrectPiece(boardDescription,indiceDest,piece_temp,color);
-                printf("RESERUCTION VALIDATION\n");
                 return 0;
             }
-            printf("NO ChECK VALIDATION\n");
             int sign = 1;
             if (color == 1){
                 sign = -1;
             }
-            printf("--> %d\n",boardDescription->enPassant );
             if(indiceDest == boardDescription->enPassant){
                 killPiece(boardDescription,indiceDest+(8*-sign),color);
-                printf("KILL ENPASSANT VALIDATION\n");
             }
             boardDescription->enPassant=64;
             if (indiceDest == (indiceSrc +(sign*16)))
                 boardDescription->enPassant=indiceSrc+(8*sign);
+            boardDescription->half_moves = 0;
             if ((indiceDest>=0 && indiceDest<=7) || (indiceDest>=56 && indiceDest<=63))
                 return 2;
             break;
@@ -108,6 +101,10 @@ int jouerCoup(BoardDescription *boardDescription,char *positionSrc, char *positi
                     resurrectPiece(boardDescription,indiceDest, piece_temp, color);
                 return 0;
             }
+            boardDescription->half_moves ++;
+            if(piece_temp != 1)
+                boardDescription->half_moves = 0;
+            boardDescription->enPassant=64;
             break;
         case 2 :
             if (!bishopValidation(boardDescription,indiceSrc,indiceDest))
@@ -121,6 +118,10 @@ int jouerCoup(BoardDescription *boardDescription,char *positionSrc, char *positi
                     resurrectPiece(boardDescription,indiceDest, piece_temp, color);
                 return 0;
             }
+            boardDescription->half_moves ++;
+            if(piece_temp != 1)
+                boardDescription->half_moves = 0;
+            boardDescription->enPassant=64;
             break;
         case 3 :
             if (!rookValidation(boardDescription,indiceSrc,indiceDest))
@@ -142,7 +143,10 @@ int jouerCoup(BoardDescription *boardDescription,char *positionSrc, char *positi
                 boardDescription->castling = (boardDescription->castling & 0b1011);
             if (indiceSrc == 63)
                 boardDescription->castling = (boardDescription->castling & 0b0111);
-            printf(" %d\n",boardDescription->castling);
+            boardDescription->enPassant=64;
+            boardDescription->half_moves ++;
+            if(piece_temp != 1)
+                boardDescription->half_moves = 0;
             break;
         case 4 :
             if (!queenValidation(boardDescription,indiceSrc,indiceDest))
@@ -156,6 +160,10 @@ int jouerCoup(BoardDescription *boardDescription,char *positionSrc, char *positi
                     resurrectPiece(boardDescription,indiceDest, piece_temp, color);
                 return 0;
             }
+            boardDescription->half_moves ++;
+            if(piece_temp != 1)
+                boardDescription->half_moves = 0;
+            boardDescription->enPassant=64;
             break;
         case 5 :
             if (!kingValidation(boardDescription,indiceSrc,indiceDest)&& !kingCastling(boardDescription,indiceSrc,indiceDest,color))
@@ -169,12 +177,14 @@ int jouerCoup(BoardDescription *boardDescription,char *positionSrc, char *positi
                     resurrectPiece(boardDescription,indiceDest, piece_temp, color);
                 return 0;
             }
-            printf("%d\n",boardDescription->castling);
             if (color == 0 )
                 boardDescription->castling = (boardDescription->castling & 0b1100);
             else
                 boardDescription->castling = (boardDescription->castling & 0b0011);
-            printf(" %d\n",boardDescription->castling);
+            boardDescription->half_moves ++;
+            if(piece_temp != 1)
+                boardDescription->half_moves = 0;
+            boardDescription->enPassant=64;
             break;
         default:
             return 0;
@@ -202,4 +212,45 @@ bool promotion(BoardDescription *boardDescription, char *positionDest, int color
         return true; 
     }
     return false;
+}
+
+
+bool stalemate(BoardDescription *boardDescription,int color){
+
+    BoardDescription *boardDescriptionCopy = malloc(sizeof(BoardDescription));
+    for (int i = 0; i < 2; ++i){
+        for (int j = 0; j < 6; ++j){
+            boardDescriptionCopy->boards[i][j] = boardDescription->boards[i][j];
+        }
+    }
+    uint64_t colorBitboard =
+            boardDescription->boards[color][0] | boardDescription->boards[color][1] |
+            boardDescription->boards[color][2] |
+            boardDescription->boards[color][3] | boardDescription->boards[color][4] |
+            boardDescription->boards[color][5];
+    uint64_t pos = 1;
+    for (int i=0; i<64 ; i++){
+        //Find the piece
+        if ((colorBitboard & pos) != 0){
+            for (int j=0; j<64 ; j++){
+                if(verifCoup(boardDescriptionCopy,i,j,color)!=0)
+                    return 0;
+            }
+        }
+        pos = pos <<1;
+    }        
+    return 1;
+}
+
+
+int isOver(BoardDescription *boardDescription,int color){
+    if (stalemate(boardDescription,color)){
+        if (isCheck(boardDescription,color)){
+            return 1;
+        }
+        return 2;
+    }
+    if(boardDescription->half_moves>50)
+        return 3;
+    return 0;
 }
